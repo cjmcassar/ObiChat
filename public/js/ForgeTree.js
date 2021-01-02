@@ -10,7 +10,7 @@ $(document).ready(function () {
 
   $('#createBucketModal').on('shown.bs.modal', function () {
     $("#newBucketKey").focus();
-  })
+  });
 
   $('#hiddenUploadField').change(function () {
     var node = $('#appBuckets').jstree(true).get_selected(true)[0];
@@ -51,7 +51,7 @@ function createNewBucket() {
     },
     error: function (err) {
       if (err.status == 409)
-        alert('Bucket already exists - 409: Duplicated')
+        alert('Bucket already exists - 409: Duplicated');
       console.log(err);
     }
   });
@@ -103,11 +103,11 @@ function prepareAppBucketTree() {
           error: function (err) {
             var msgButton = 'This file is not translated yet! ' +
               '<button class="btn btn-xs btn-info" onclick="translateObject()"><span class="glyphicon glyphicon-eye-open"></span> ' +
-              'Start translation</button>'
+              'Start translation</button>';
             $("#forgeViewer").html(msgButton);
           }
         });
-      })
+      });
     }
   });
 }
