@@ -27,10 +27,23 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode).json(err);
 });
 
+
 app.get("/", function(req, res)
 {
   res.render("login");
 });
+
+app.get("/register", function(req, res)
+{
+  res.render("register");
+});
+
+app.get("/view", function(req, res)
+{
+  res.render("view");
+});
+
+
 
 
 app.listen(PORT, () => { console.log(`Server listening on port ${PORT}`); });
