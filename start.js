@@ -29,18 +29,8 @@ app.use((err, req, res, next) => {
 
 app.get("/", function(req, res)
 {
-  res.render("index");
+  res.render("login");
 });
-
-// app.get("/bucketsandobjects", function(req, res)
-// {
-//   res.render("bucketsandobjects");
-// });
-
-// app.get("/modelcreatebucket", function(req, res)
-// {
-//   res.render("modelcreatebucket");
-// });
 
 
 app.listen(PORT, () => { console.log(`Server listening on port ${PORT}`); });
