@@ -41,23 +41,71 @@
   else if (document.querySelector('#login-form') !== null)
   {
     //login
-    loginForm.addEventListener('submit', (e) =>
+    // loginForm.addEventListener('submit', (e) =>
+    // {
+    //   e.preventDefault();
+
+    //   //get user info
+
+    //   const loginemail = loginForm['login-email'].value;
+    //   const loginpassword = loginForm['login-password'].value;
+
+    //   // register the user
+
+    //   auth.signInWithEmailAndPassword(loginemail, loginpassword).then(cred =>
+    //   {
+    //     // console.log(cred.user);
+    //     // loginForm.reset();
+    //   });
+    // });
+    document
+    .getElementById("login-form")
+    .addEventListener("submit", (event) =>
     {
-      e.preventDefault();
+      event.preventDefault();
+      const login = loginForm['login-email'].value;
+      const password = loginForm['login-password'].value;
 
-      //get user info
-
-      const loginemail = loginForm['login-email'].value;
-      const loginpassword = loginForm['login-password'].value;
-
-      // register the user
-
-      auth.signInWithEmailAndPassword(loginemail, loginpassword).then(cred =>
-      {
-        // console.log(cred.user);
-        // loginForm.reset();
-      });
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(login, password)
+        .then((
+        {
+          user
+        }) =>
+        {
+          return user.getIdToken().then((idToken) =>
+          {
+            return fetch("/sessionLogin",
+            {
+              method: "POST",
+              headers:
+              {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+              },
+              body: JSON.stringify(
+              {
+                idToken
+              }),
+            });
+          });
+        })
+        .then(() =>
+        {
+          return firebase.auth().signOut();
+        })
+        .then(() =>
+        {
+          window.location.assign("/profile");
+        });
+      return false;
     });
+
+
+
+
   }
   //logout
 
@@ -69,3 +117,5 @@
     //   console.log("User signed out");
     // });
   });
+
+

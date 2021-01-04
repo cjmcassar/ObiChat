@@ -106,3 +106,4 @@ Thumbs.db
 !.editorconfig
 !.phpcs.xml.dist
 uploads/
+serviceAccountKey.json

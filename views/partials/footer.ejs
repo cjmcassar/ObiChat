@@ -5,14 +5,21 @@
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
 
 <!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
+  https://firebase.google.com/docs/web/setup#available-libraries -->
 
 <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 
-<script>
+<script> id="fbauth"
   // Your web app's Firebase configuration
   // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  var firebaseConfig = {
+  var firebaseConfig = 
+  {
+    apiKey: "AIzaSyBhdymNUMHIMZqKKCLIfzeyQ3vV7Fl8cf8",
+    authDomain: "obivision-7645d.firebaseapp.com",
+    databaseURL: "https://obivision-7645d-default-rtdb.firebaseio.com",
+    projectId: "obivision-7645d",
+    appId: "1:809563515817:web:a06de894ebd9115cbd72b8",
+    measurementId: "G-BL2T39VTVF"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
@@ -22,12 +29,20 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // update firestore settings
-  db.settings({ timestampsInSnapshots: true });
+  auth.setPersistence(firebase.auth.Auth.Persistence.NONE);
 
+  // update firestore settings
+  db.settings({
+    timestampsInSnapshots: true
+  });
 </script>
 
 <p class="text-center text-muted">© Copyright 2020 Obi Vision</p>
+
+
 <script src="/public/js/fbauth.js"></script>
+
+
 </body>
+
 </html>
