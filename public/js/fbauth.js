@@ -94,11 +94,12 @@
         })
         .then(() =>
         {
+          loginForm.reset();
           return firebase.auth().signOut();
         })
         .then(() =>
         {
-          window.location.assign("/profile");
+          window.location.assign("/view");
         });
       return false;
     });
@@ -112,10 +113,10 @@
   logout.addEventListener('click', (e) =>
   {
     e.preventDefault();
-    auth.signOut(); //.then(() =>
-    // {
-    //   console.log("User signed out");
-    // });
+    auth.signOut().then(() =>
+    {
+      window.location.assign("/");
+    });
   });
 
 

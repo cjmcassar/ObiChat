@@ -19,6 +19,7 @@ var serviceAccount = require("./serviceAccountKey.json");
 admin.initializeApp(
 {
   credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://obivision-7645d-default-rtdb.firebaseio.com"
 });
 
 
