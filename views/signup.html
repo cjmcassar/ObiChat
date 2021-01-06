@@ -1,38 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Firebase Server Auth</title>
-    <link type="css" rel="stylesheet" href="/public/css/main.css" />
-  </head>
-  <body>
-    <main>
-      <section>
-        <form id="signup">
-          <label>Login</label>
-          <input type="text" name="login" />
-          <label>Password</label>
-          <input type="password" name="password" />
-          <button>Sign up</button>
-        </form>
-      </section>
 
-      <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
-      <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Firebase Server Auth</title>
+  <link type="css" rel="stylesheet" href="css/main.css" />
+</head>
 
-      <script>
-        window.addEventListener("DOMContentLoaded", () => {
+<body>
+  <main>
+    <section>
+      <form id="signup">
+        <label>Login</label>
+        <input type="text" name="login" />
+        <label>Password</label>
+        <input type="password" name="password" />
+        <button>Sign up</button>
+      </form>
+    </section>
 
-          document
-            .getElementById("signup")
-            .addEventListener("submit", (event) => {
-              event.preventDefault();
+    <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.1/firebase-auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBhdymNUMHIMZqKKCLIfzeyQ3vV7Fl8cf8",
+        authDomain: "obivision-7645d.firebaseapp.com",
+        databaseURL: "https://obivision-7645d-default-rtdb.firebaseio.com",
+        projectId: "obivision-7645d",
+        storageBucket: "obivision-7645d.appspot.com",
+        messagingSenderId: "809563515817",
+        appId: "1:809563515817:web:a06de894ebd9115cbd72b8",
+        measurementId: "G-BL2T39VTVF"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+
+      firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+      document
+        .getElementById("signup")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          const login = event.target.login.value;
+          const password = event.target.password.value;
+
+          firebase
+            .auth()
+            .createUserWithEmailAndPassword(login, password)
+            .then(({ user }) => {
+              return user.getIdToken().then((idToken) => {
+                return fetch("/sessionLogin", {
+                  method: "POST",
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                    "CSRF-Token": Cookies.get("XSRF-TOKEN"),
+                  },
+                  body: JSON.stringify({ idToken }),
+                });
+              });
+            })
+            .then(() => {
+              return firebase.auth().signOut();
+            })
+            .then(() => {
+              window.location.assign("/view");
             });
-
+          return false;
         });
-      </script>
-    </main>
-  </body>
+    </script>
+  </main>
+</body>
+
 </html>
