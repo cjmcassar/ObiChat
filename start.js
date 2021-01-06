@@ -9,6 +9,8 @@ if (config.credentials.client_id == null || config.credentials.client_secret == 
 }
 
 let app = express();
+app.engine("html", require("ejs").renderFile);
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json({ limit: '50mb' }));
 app.use('/api/forge/oauth', require('./routes/oauth'));
@@ -17,6 +19,22 @@ app.use('/api/forge/modelderivative', require('./routes/modelderivative'));
 app.use((err, req, res, next) => {
     console.error(err);
     res.status(err.statusCode).json(err);
+});
+
+app.get("/login", function (req, res) {
+  res.render("login.html");
+});
+
+app.get("/signup", function (req, res) {
+  res.render("signup.html");
+});
+
+app.get("/view", function (req, res) {
+  res.render("view.html");
+});
+
+app.get("/", function (req, res) {
+  res.render("index.html");
 });
 
 app.listen(PORT, () => { console.log(`Server listening on port ${PORT}`); });
