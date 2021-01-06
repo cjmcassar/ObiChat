@@ -40,24 +40,6 @@
   }
   else if (document.querySelector('#login-form') !== null)
   {
-    //login
-    // loginForm.addEventListener('submit', (e) =>
-    // {
-    //   e.preventDefault();
-
-    //   //get user info
-
-    //   const loginemail = loginForm['login-email'].value;
-    //   const loginpassword = loginForm['login-password'].value;
-
-    //   // register the user
-
-    //   auth.signInWithEmailAndPassword(loginemail, loginpassword).then(cred =>
-    //   {
-    //     // console.log(cred.user);
-    //     // loginForm.reset();
-    //   });
-    // });
     document
     .getElementById("login-form")
     .addEventListener("submit", (event) =>
@@ -95,7 +77,7 @@
         .then(() =>
         {
           loginForm.reset();
-          return firebase.auth().signOut();
+          // return firebase.auth().signOut();
         })
         .then(() =>
         {
@@ -103,8 +85,6 @@
         });
       return false;
     });
-
-
 
 
   }

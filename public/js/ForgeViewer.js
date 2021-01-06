@@ -6,6 +6,8 @@ function launchViewer(urn) {
     getAccessToken: getForgeToken
   };
 
+  // window.LMV_THIRD_PARTY_COOKIE = false;
+
   Autodesk.Viewing.Initializer(options, () => {
     viewer = new Autodesk.Viewing.GuiViewer3D(document.getElementById('forgeViewer'), { extensions: [ 'Autodesk.DocumentBrowser'] });
     viewer.start();

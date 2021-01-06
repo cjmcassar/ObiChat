@@ -8,19 +8,14 @@ const express = require('express');
 const ejs = require("ejs");
 const admin = require("firebase-admin");
 
-const csrfMiddleware = csrf(
-{
-  cookie: true
-});
-
-
-var serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = require("./serviceAccountKey.json");
 
 admin.initializeApp(
 {
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://obivision-7645d-default-rtdb.firebaseio.com"
 });
+
 
 
 const PORT = process.env.PORT || 3000;
@@ -39,8 +34,13 @@ const app = express();
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.set("view engine", "ejs");
 
+app.use(cookieParser(config.cookieSecret, { httpOnly: true }));
 app.use(bodyParser.json());
-app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+const csrfMiddleware = csrf(
+  {
+    cookie: true
+  });
 app.use(csrfMiddleware);
 
 app.use(express.json(
@@ -56,7 +56,7 @@ app.use((err, req, res, next) =>
   res.status(err.statusCode).json(err);
 });
 
-app.all("*", (req, res, next) =>
+app.use(function (req, res, next) 
 {
   res.cookie("XSRF-TOKEN", req.csrfToken());
   next();
