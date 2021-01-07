@@ -26,8 +26,8 @@ if (config.credentials.client_id == null || config.credentials.client_secret == 
 
 let app = express();
 app.engine("html", require("ejs").renderFile);
-
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(express.json({ limit: '50mb' }));
 
 // --------------- autodesk api configuration ------ 
@@ -80,7 +80,7 @@ app.get("/", function (req, res) {
 app.post("/sessionLogin", (req, res) => {
   const idToken = req.body.idToken.toString();
 
-  const expiresIn = 60 * 60 * 24 * 5 * 1000;
+  const expiresIn = 60 * 60 * 24 * 1 * 1000;
 
   admin
     .auth()
