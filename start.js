@@ -74,13 +74,14 @@ app.get("/view", function (req, res) {
 });
 
 app.get("/", function (req, res) {
+  res.clearCookie("session");
   res.render("index.html");
 });
 
 app.post("/sessionLogin", (req, res) => {
   const idToken = req.body.idToken.toString();
 
-  const expiresIn = 60 * 60 * 24 * 1 * 1000;
+  const expiresIn = 60 * 60 * 24 * 5 * 1000;
 
   admin
     .auth()

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>View Models - Autodesk Forge</title>
   <meta charset="utf-8" />
@@ -10,26 +11,43 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/jstree.min.js"></script>
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jstree/3.3.7/themes/default/style.min.css" />
+
   <!-- Autodesk Forge Viewer files -->
-  <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css" type="text/css">
+  <link rel="stylesheet" href="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/style.min.css"
+    type="text/css">
   <script src="https://developer.api.autodesk.com/modelderivative/v2/viewers/7.*/viewer3D.min.js"></script>
   <!-- this project files -->
   <link href="css/main.css" rel="stylesheet" />
   <script src="js/ForgeTree.js"></script>
   <script src="js/ForgeViewer.js"></script>
+  <!-- firebase project files -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-analytics.js"></script>
 </head>
+
 <body>
   <!-- Fixed navbar by Bootstrap: https://getbootstrap.com/examples/navbar-fixed-top/ -->
-  <nav class="navbar navbar-default navbar-fixed-top">
+  <nav class="navbar navbar-default navbar-fixed-top" id="uploadDesign">
     <div class="container-fluid">
       <ul class="nav navbar-nav left">
         <li>
-          <a href="http://developer.autodesk.com" target="_blank">
-              <img alt="Autodesk Forge" src="//developer.static.autodesk.com/images/logo_forge-2-line.png" height="20">
+          <a href="http://obi.vision" target="_blank">
+            <img alt="Obi" src="" height="20">
           </a>
         </li>
       </ul>
+      <!-- added upload field for firebase upload -->
+
+
+      <input type='file' style="float: right" id="fileButton" />
+
+      <button class="btn btn-xs btn-info" style="float: right" type="submit"
+        value="upload" id="uploader"></button>
+
     </div>
+
   </nav>
   <!-- End of navbar -->
   <div class="container-fluid fill">
@@ -39,7 +57,8 @@
           <div class="panel-heading" data-toggle="tooltip">
             Buckets &amp; Objects
             <span id="refreshBuckets" class="glyphicon glyphicon-refresh" style="cursor: pointer"></span>
-            <button class="btn btn-xs btn-info" style="float: right" id="showFormCreateBucket" data-toggle="modal" data-target="#createBucketModal">
+            <button class="btn btn-xs btn-info" style="float: right" id="showFormCreateBucket" data-toggle="modal"
+              data-target="#createBucketModal">
               <span class="glyphicon glyphicon-folder-close"></span> New bucket
             </button>
           </div>
@@ -78,5 +97,8 @@
       </div>
     </div>
   </div>
+
+  <script src="/js/upload.js"></script>
 </body>
+
 </html>
