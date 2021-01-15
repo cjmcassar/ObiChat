@@ -25,6 +25,8 @@ fileButton.addEventListener('change', function(e)
 {
   // Get file
   var file = e.target.files[0];
+  var fileName = file.name;
+  var metadata = { contentType: file.type};
 
   firebase.auth().onAuthStateChanged(function(user)
   {
@@ -32,12 +34,13 @@ fileButton.addEventListener('change', function(e)
     {
       // User is signed in.
       console.log(user);
+      // get idtoken
       user.getIdToken().then(function(idToken)
       { // <------ Check this line
         console.log(idToken); // It shows the Firebase token now
       });
       console.log(user.uid);
-      firebase.storage().ref('users').child(user.uid + "/designs").put(file);
+      firebase.storage().ref('users').child(user.uid + "/" + fileName).put(file);
     }
     else
     {
