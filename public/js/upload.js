@@ -26,7 +26,7 @@ fileButton.addEventListener('change', function(e)
   // Get file
   var file = e.target.files[0];
   var fileName = file.name;
-  var metadata = { contentType: file.type};
+  // var metadata = { contentType: file.type};
 
   firebase.auth().onAuthStateChanged(function(user)
   {
