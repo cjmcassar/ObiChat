@@ -1,7 +1,12 @@
 const fs = require('fs');
 const express = require('express');
 const multer  = require('multer');
-const { BucketsApi, ObjectsApi, PostBucketsPayload } = require('forge-apis');
+const axios  = require('axios');
+const { BucketsApi, ObjectsApi, PostBucketsPayload,     DerivativesApi,
+    JobPayload,
+    JobPayloadInput,
+    JobPayloadOutput,
+    JobSvfOutputPayload } = require('forge-apis');
 
 const { getClient, getInternalToken } = require('./common/oauth');
 const config = require('../config');
@@ -73,14 +78,74 @@ router.post('/buckets', async (req, res, next) => {
 // Request body must be structured as 'form-data' dictionary
 // with the uploaded file under "fileToUpload" key, and the bucket name under "bucketKey".
 router.post('/objects', multer({ dest: 'uploads/' }).single('fileToUpload'), async (req, res, next) => {
+
     fs.readFile(req.file.path, async (err, data) => {
         if (err) {
             next(err);
         }
         try {
             // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
-            await new ObjectsApi().uploadObject(req.body.bucketKey, req.file.originalname, data.length, data, {}, req.oauth_client, req.oauth_token);
-            res.status(200).end();
+            const response = await new ObjectsApi().uploadObject(req.body.bucketKey, req.file.originalname, data.length, data, {}, req.oauth_client, req.oauth_token);
+            if(response.statusCode === 200){
+                let buff = Buffer(response.body.objectId)
+            let job = new JobPayload();
+            job.input = new JobPayloadInput();
+            job.input.urn =buff.toString('base64');
+            job.output = new JobPayloadOutput([
+                new JobSvfOutputPayload()
+            ]);
+            job.output.formats[0].type = 'svf';
+            job.output.formats[0].views = ['2d', '3d'];
+            try {
+                console.log('translating')
+                const token = req.oauth_token.access_token
+                // Submit a translation job using [DerivativesApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/DerivativesApi.md#translate).
+                await new DerivativesApi().translate(job, {}, req.oauth_client, req.oauth_token);
+                setInterval(function () { 
+                    console.log('polling')
+                    var config = {
+                        method: 'get',
+                        url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/'+buff.toString('base64') +'/manifest',
+                        headers: { 
+                          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:84.0) Gecko/20100101 Firefox/84.0', 
+                          'Accept': '*/*', 
+                          'Accept-Language': 'en-GB,en;q=0.5', 
+                          'Authorization': 'Bearer ' + token,
+                          'Origin': 'http://localhost:3000', 
+                          'Connection': 'keep-alive', 
+                          'Referer': 'http://localhost:3000/view', 
+                          'Pragma': 'no-cache', 
+                          'Cache-Control': 'no-cache'
+                        }
+                      };
+                      
+                      axios(config)
+                      .then(function (response) {
+                          response = response.data
+                          console.log(response.progress, response.status)
+                          if (response.progress === "complete"){
+                              if(response.status === "success"){
+                                  console.log("JOB COMPLETE")
+                              }
+                            
+                          }
+                      })
+                      .catch(function (error) {
+                        console.log(error);
+                      });
+                }, 2000);
+                res.status(200).end();
+            } catch(err) {
+                next(err);
+            }
+        }
+        else{
+            console.log('bad')
+            res.status(response.statusCode).end(response);
+        }
+
+            
+
         } catch(err) {
             next(err);
         }

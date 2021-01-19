@@ -22,6 +22,7 @@ router.use(async (req, res, next) => {
 // POST /api/forge/modelderivative/jobs - submits a new translation job for given object URN.
 // Request body must be a valid JSON in the form of { "objectName": "<translated-object-urn>" }.
 router.post('/jobs', async (req, res, next) => {
+    console.log(req.body.objectName)
     let job = new JobPayload();
     job.input = new JobPayloadInput();
     job.input.urn = req.body.objectName;
