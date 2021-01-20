@@ -1,0 +1,25 @@
+.flex-container
+{
+    display: flex;
+    justify-content: space-around; 
+    align-self: center;
+    align-items: stretch;
+    padding: 300px 0;
+}
+
+.card{
+    width: 502px;
+    height: 402px;
+    border-radius: 4.25rem;
+}
+
+.container
+{
+    padding-top: 20px;
+}
+
+.img-fluid
+{
+    width: 120px;
+    height: 120px;
+}

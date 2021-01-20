@@ -21,9 +21,12 @@ window.addEventListener("DOMContentLoaded", () =>
     {
       event.preventDefault();
       firebase.auth().signOut()
-      .then(() =>
-      {
-        window.location.assign("/login");
-      });
+        .then(() =>
+        {
+        //   console.log("logged out");
+          window.location.assign("/login");
+        });
+
     });
+
 });
