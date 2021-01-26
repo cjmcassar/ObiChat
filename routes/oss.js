@@ -2,6 +2,18 @@ const fs = require('fs');
 const express = require('express');
 const multer = require('multer');
 const axios = require('axios');
+// const firebase = require("firebase/app");
+// const admin = require("firebase-admin");
+const storage = require("firebase/storage");
+// const auth = require("firebase/auth");
+const fbAuth = require('./fbAuth');
+const
+{
+  firebase,
+  admin
+} = require('../routes/fbConfig');
+
+
 const
 {
   BucketsApi,
@@ -31,6 +43,8 @@ router.use(async (req, res, next) =>
   req.oauth_client = getClient();
   next();
 });
+
+
 
 // GET /api/forge/oss/buckets - expects a query param 'id'; if the param is '#' or empty,
 // returns a JSON with list of buckets, otherwise returns a JSON with list of objects in bucket with given name.
@@ -123,6 +137,8 @@ router.post('/objects', multer(
     }
     try
     {
+      let uid = req.query.uid;
+      let token =req.query.token;
       // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
       const response = await new ObjectsApi().uploadObject(req.body.bucketKey, req.file.originalname, data.length, data,
       {}, req.oauth_client, req.oauth_token);
@@ -139,15 +155,15 @@ router.post('/objects', multer(
         job.output.formats[0].views = ['2d', '3d'];
         try
         {
-          console.log('translating')
-          const token = req.oauth_token.access_token
-          
+          console.log('translating');
+          const token = req.oauth_token.access_token;
+
           // Submit a translation job using [DerivativesApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/DerivativesApi.md#translate).
           await new DerivativesApi().translate(job,
           {}, req.oauth_client, req.oauth_token);
           setInterval(function()
           {
-            console.log('polling')
+            console.log('polling');
             var config = {
               method: 'get',
               url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/' + buff.toString('base64') + '/manifest',
@@ -165,6 +181,13 @@ router.post('/objects', multer(
               }
             };
 
+            //user logs in on frontend using username and password
+            // backend verifies user is logged in and redirects them to the view page
+            //you can save the user id to local storage or using session storage / cookies
+            //when making any request to the backend, pass in the id as a query parameter/ param, and then use it to upload 
+
+
+
             axios(config)
               .then(function(response)
               {
@@ -175,10 +198,39 @@ router.post('/objects', multer(
                   if (response.status === "success")
                   {
                     console.log("JOB COMPLETE");
-                  }
+                    // upload to firebase here
+
+                   
+
+                    var user = firebase.auth();
+                    //console.log(user);
+                    //idtoken
+                    const customToken = admin.auth().createCustomToken(uid)
                   
+                    firebase.auth().onAuthStateChanged(function()
+                    {
+                      if (user)
+                      {
+                        admin.auth().verifyIdToken(token)
+                          .then(function(decodedToken)
+                          {
+                            var uid = decodedToken.uid;
+                            console.log("uid ->", uid);
+                            return uid;
+                          }).catch(function(error)
+                          {
+                            //Handle error
+                          });
+                      }
+                      else
+                      {
+                        console.log("There is no current user.");
+                      }
+                    });
+                  }
+
                 }
-                
+
               })
               .catch(function(error)
               {

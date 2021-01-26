@@ -3,14 +3,8 @@ const csrf = require("csurf");
 const bodyParser = require("body-parser");
 const path = require('path');
 const express = require('express');
-const admin = require("firebase-admin");
+const {admin} = require ('./routes/fbConfig');
 
-const serviceAccount = require("./serviceAccountKey.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL:  "https://obivision-7645d-default-rtdb.firebaseio.com",
-});
 
 const csrfMiddleware = csrf({ cookie: true });
 
@@ -52,6 +46,7 @@ app.all("*", (req, res, next) => {
 // --------------- end of cookie configuration ------ 
 
 app.get("/login", function (req, res) {
+  res.clearCookie("session");
   res.render("login.html");
 });
 
@@ -79,6 +74,7 @@ app.get("/", function (req, res) {
 });
 
 app.post("/sessionLogin", (req, res) => {
+  
   const idToken = req.body.idToken.toString();
 
   const expiresIn = 60 * 60 * 24 * 5 * 1000;
@@ -89,6 +85,7 @@ app.post("/sessionLogin", (req, res) => {
     .then(
       (sessionCookie) => {
         const options = { maxAge: expiresIn, httpOnly: true };
+        
         res.cookie("session", sessionCookie, options);
         res.end(JSON.stringify({ status: "success" }));
       },
@@ -104,3 +101,4 @@ app.get("/sessionLogout", (req, res) => {
 });
 
 app.listen(PORT, () => { console.log(`Server listening on port ${PORT}`); });
+
