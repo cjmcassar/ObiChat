@@ -15,6 +15,7 @@ window.addEventListener("DOMContentLoaded", () =>
 
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
+  // The /sessionlogout already does this. Should clean this up later.
   document
     .getElementById("logout")
     .addEventListener("click", (event) =>
@@ -23,7 +24,8 @@ window.addEventListener("DOMContentLoaded", () =>
       firebase.auth().signOut()
         .then(() =>
         {
-        //   console.log("logged out");
+          localStorage.removeItem('userId');
+          //   console.log("logged out");
           window.location.assign("/login");
         });
 

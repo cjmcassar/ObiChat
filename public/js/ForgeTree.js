@@ -23,8 +23,11 @@ $(document).ready(function () {
         formData.append('fileToUpload', file);
         formData.append('bucketKey', node.id);
 
+       let uid =  localStorage.getItem('uid');
+       let token = localStorage.getItem('token');
+
         $.ajax({
-          url: '/api/forge/oss/objects',
+          url: `/api/forge/oss/objects?uid=${uid}&token=${token}`,
           data: formData,
           processData: false,
           contentType: false,
