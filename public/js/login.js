@@ -33,7 +33,9 @@ window.addEventListener("DOMContentLoaded", () =>
           user
         }) =>
         {
+          
           localStorage.setItem('uid', user.uid);
+          
           return user.getIdToken().then((idToken) =>
           {
             localStorage.setItem('token', idToken);
@@ -59,8 +61,8 @@ window.addEventListener("DOMContentLoaded", () =>
         // })
         .then(() =>
         {
-          
-          console.log(firebase.auth().currentUser);
+         
+          // console.log(firebase.auth().currentUser);
           window.location.assign("/view");
         });
       return false;

@@ -24,7 +24,8 @@ window.addEventListener("DOMContentLoaded", () =>
       firebase.auth().signOut()
         .then(() =>
         {
-          localStorage.removeItem('userId');
+          localStorage.removeItem('uid');
+          localStorage.removeItem('token');
           //   console.log("logged out");
           window.location.assign("/login");
         });

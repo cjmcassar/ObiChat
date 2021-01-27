@@ -25,6 +25,7 @@ $(document).ready(function () {
 
        let uid =  localStorage.getItem('uid');
        let token = localStorage.getItem('token');
+       
 
         $.ajax({
           url: `/api/forge/oss/objects?uid=${uid}&token=${token}`,
