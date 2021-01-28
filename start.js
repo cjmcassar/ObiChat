@@ -69,7 +69,7 @@ app.get("/view", function (req, res) {
 });
 
 app.get("/", function (req, res) {
-  res.clearCookie("session");
+  // res.clearCookie("session");
   res.render("index.html");
 });
 

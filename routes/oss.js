@@ -139,7 +139,7 @@ router.post('/objects', multer(
     {
       let uid = req.query.uid;
       let idToken = req.query.token;
-    
+
       // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
       const response = await new ObjectsApi().uploadObject(req.body.bucketKey, req.file.originalname, data.length, data,
       {}, req.oauth_client, req.oauth_token);
@@ -198,58 +198,30 @@ router.post('/objects', multer(
                   {
                     console.log("JOB COMPLETE");
                     // upload to firebase here
-
                     try
                     {
-
-                      //user is undefined, need to reference them.
-                      // console.log(uid);
                       var file = job.output;
-                      // console.log(file);
-                      // console.log("file", file);
                       var fileName = req.file.originalname;
-                      // console.log(fileName);
-                      // const fileBuffer = Buffer(JSON.stringify(file));
-                      // const fileBuffer = new ArrayBuffer(JSON.stringify(file));
+                      //TODO add in file metadata
                       const fileBuffer = new Uint8Array(Buffer.from(JSON.stringify(file)));
-                      // console.log('fileBuffer', {
-                      //   fileBuffer,
-                      //   fileType: typeof fileBuffer
-                      // });
-
-                     // global.XMLHttpRequest = require('xhr2');
-
-                      // firebase.storage().ref('users').child(uid + "/" + fileName).put();
-                     // admin.storage().ref('users').child(uid + "/" + fileName).put(fileBuffer);
-                      // const bucket = admin.storage().bucket('users').file(uid + "/" + fileName).save(fileBuffer).then(res => {
-                      //   console.log('res', res);
-                      // });
-
                       const bucket = admin.storage().bucket('gs://obivision-7645d.appspot.com/');
-                      const fileUpload = bucket.file(uid + "/" + fileName);
-                      // console.log('fileUpload', fileUpload);
+                      const fileUpload = bucket.file("Users/" + uid + "/" + fileName);
 
-                      fileUpload.save(fileBuffer).then((res, err) => {
-                        console.log('firebase', {
+                      fileUpload.save(fileBuffer).then((res, err) =>
+                      {
+                        console.log('firebase',
+                        {
                           res,
                           err
-                        })
+                        });
                       });
-              
-                     //  bucket.upload(uid + "/" + fileName)
-         
-                      
+
                     }
                     catch (err)
                     {
                       next(err);
+                      return;
                     }
-                    // console.log(uid, token, req.query);
-                    // console.log(uid);
-                    // console.log(token);
-                    // console.log(req.query);
-
-                    // console.log(user);
                   }
 
                 }
