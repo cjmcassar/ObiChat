@@ -1,3 +1,4 @@
+let storage;
 window.addEventListener("DOMContentLoaded", () =>
 {
   const firebaseConfig = {
@@ -14,6 +15,7 @@ window.addEventListener("DOMContentLoaded", () =>
   firebase.initializeApp(firebaseConfig);
 
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
+  storage = firebase.storage();
 
   // The /sessionlogout already does this. Should clean this up later.
   document
