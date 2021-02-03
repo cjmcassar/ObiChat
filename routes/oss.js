@@ -162,8 +162,8 @@ router.post('/objects', multer(
           // Submit a translation job using [DerivativesApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/DerivativesApi.md#translate).
           await new DerivativesApi().translate(job,
           {}, req.oauth_client, req.oauth_token);
-          setInterval(function()
-          {
+          // setInterval(function()
+          // {
             console.log('polling');
             var config = {
               method: 'get',
@@ -196,24 +196,23 @@ router.post('/objects', multer(
                 {
                   if (response.status === "success")
                   {
-                    console.log("JOB COMPLETE");
+                    console.log("JOB COMPLETE", job);
                     // upload to firebase here
                     try
                     {
                       var file = job.output;
                       var fileName = req.file.originalname;
-                      //TODO add in file metadata
-                      const fileBuffer = new Uint8Array(Buffer.from(JSON.stringify(file)));
-                      const bucket = admin.storage().bucket('gs://obivision-7645d.appspot.com/');
-                      const fileUpload = bucket.file("Users/" + uid + "/" + fileName);
+                      var urn = job.input.urn;
 
-                      fileUpload.save(fileBuffer).then((res, err) =>
+                      const userDocRef = admin.firestore().collection(`Files`).doc();
+    
+
+                      userDocRef.set(
                       {
-                        console.log('firebase',
-                        {
-                          res,
-                          err
-                        });
+                        bucketKey: req.body.bucketKey,
+                        userID: uid,
+                        designName: fileName,
+                        objectID: urn,
                       });
 
                     }
@@ -223,7 +222,15 @@ router.post('/objects', multer(
                       return;
                     }
                   }
+                  else
+                  {
+                    console.log("Failed");
+                  }
 
+                }
+                else
+                {
+                  console.log("Failed");
                 }
 
               })
@@ -232,7 +239,6 @@ router.post('/objects', multer(
                 console.log(error);
                 return;
               });
-          }, 2000);
           res.status(200).end();
         }
         catch (err)
@@ -252,6 +258,7 @@ router.post('/objects', multer(
       next(err);
       return;
     }
+
   });
 });
 

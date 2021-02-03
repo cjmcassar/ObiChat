@@ -1,5 +1,7 @@
+let firebaseData = []
 $(document).ready(function()
 {
+
   prepareAppBucketTree();
   $('#refreshBuckets').click(function()
   {
@@ -27,7 +29,7 @@ $(document).ready(function()
       case 'bucket':
         var formData = new FormData();
         formData.append('fileToUpload', file);
-        formData.append('bucketKey', node.id);
+        formData.append('bucketKey', "zmzmzm");
 
         let uid = localStorage.getItem('uid');
         let token = localStorage.getItem('token');
@@ -42,14 +44,26 @@ $(document).ready(function()
           type: 'POST',
           success: function(data)
           {
-            $('#appBuckets').jstree(true).refresh_node(node);
-            _this.value = '';
+            firebaseData = []
+            setTimeout(() =>
+            {
+              fetchFirebaseData()
+                .then((data) =>
+                {
+                  $('#appBuckets').jstree(true).refresh_node(node);
+                  _this.value = '';
+                })
+            }, 3000)
+
+            // 
+
           }
         });
         break;
     }
   });
 });
+
 
 function createNewBucket()
 {
@@ -76,35 +90,45 @@ function createNewBucket()
   });
 }
 
-//TODO - Add reference to the user's uid
-// - send link shown files to the autodesk database
+//TO DO - Add sharing function based on object ID and userID
+
+// function shareFile(objectID, userId){
+//   return new Promise((resolve, reject)=> {
+
+
+
+//   });
+// }
+
+
+function fetchFirebaseData()
+{
+  return new Promise((resolve, reject) =>
+  {
+    console.log(localStorage.getItem('uid'));
+    uid = localStorage.getItem('uid');
+
+    var docRef = db.collection("Files").where('userID', '==', uid);
+    docRef.get().then(function(docs)
+    {
+      docs.forEach(function(doc)
+      {
+        firebaseData.push(doc.data());
+      });
+      resolve(firebaseData)
+    }).catch(function(error)
+    {
+      reject(error);
+      console.log("Error getting document:", error);
+    });
+  })
+}
 
 function prepareAppBucketTree()
 {
-  let storageRef = storage.ref('Users/A47GMtgyM2aoFDArAzBTt4greVF3');
-  // console.log(allImages);
-  const data = []
-  storageRef
-    .listAll()
-    .then(function(res)
+  fetchFirebaseData()
+    .then(() =>
     {
-      res.items.forEach((imageRef) =>
-      {
-
-        //  imageRef.getDownloadURL().then((url) => {
-        //      console.log("==========url", url)
-        //  data.push({
-        //    name: imageRef.name,
-        //    url,
-        //    id: imageRef.name
-        //  })
-        data.push(imageRef.name);
-        // if (allImages.indexOf(url) === -1) {
-        //   setImages((allImages) => [...allImages, url]);
-        // }
-        //});
-      });
-
       $('#appBuckets').jstree(
       {
         'core':
@@ -116,27 +140,37 @@ function prepareAppBucketTree()
           'check_callback': true,
           'data': [
           {
-            text: 'A47GMtgyM2aoFDArAzBTt4greVF3',
+            text: localStorage.getItem('uid'),
             'icon': 'glyphicon glyphicon-folder-open',
-            'type': 'bucket',
-            children: data.map((text) => (
+            type: 'bucket',
+            children: firebaseData.map((doc) => (
             {
-              text,
+              text: doc.designName,
               'icon': 'glyphicon glyphicon-file',
-              type: 'object'
+              type: 'object',
+              ...doc,
             }))
           }]
-          //  {
-          //   "url": '/api/forge/oss/buckets',
-          //   "dataType": "json",
-          //   'multiple': false,
-          //   "data": function (node) {
-          //     console.log("===node", node)
-          //     return { "id": node.id };
-          //   }
-          // }
         },
-       
+        'types':
+        {
+          'default':
+          {
+            'icon': 'glyphicon glyphicon-question-sign'
+          },
+          '#':
+          {
+            'icon': 'glyphicon glyphicon-cloud'
+          },
+          'bucket':
+          {
+            'icon': 'glyphicon glyphicon-folder-open'
+          },
+          'object':
+          {
+            'icon': 'glyphicon glyphicon-file'
+          }
+        },
         "plugins": ["types", "state", "sort", "contextmenu"],
         contextmenu:
         {
@@ -149,36 +183,44 @@ function prepareAppBucketTree()
       {
         if (data != null && data.node != null && data.node.type == 'object')
         {
-
-
-          // $("#forgeViewer").empty();
-          // var urn = data.node.id;
-          // getForgeToken(function (access_token) {
-          //   jQuery.ajax({
-          //     url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/' + urn + '/manifest',
-          //     headers: { 'Authorization': 'Bearer ' + access_token },
-          //     success: function (res) {
-          //       if (res.status === 'success') launchViewer(urn);
-          //       else $("#forgeViewer").html('The translation job still running: ' + res.progress + '. Please try again in a moment.');
-          //     },
-          //     error: function (err) {
-          //       var msgButton = 'This file is not translated yet! ' +
-          //         '<button class="btn btn-xs btn-info" onclick="translateObject()"><span class="glyphicon glyphicon-eye-open"></span> ' +
-          //         'Start translation</button>'
-          //       $("#forgeViewer").html(msgButton);
+          console.log(data);
+          $("#forgeViewer").empty();
+          var urn = data.node.original.objectID;
+          console.log(urn);
+          getForgeToken(function(access_token)
+          {
+            jQuery.ajax(
+            {
+              url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/' + urn + '/manifest',
+              headers:
+              {
+                'Authorization': 'Bearer ' + access_token
+              },
+              success: function(res)
+              {
+                if (res.status === 'success') launchViewer(urn);
+                else $("#forgeViewer").html('The translation job still running: ' + res.progress + '. Please try again in a moment.');
+              },
+              error: function(err)
+              {
+                var msgButton = 'This file is not translated yet! ' +
+                  '<button class="btn btn-xs btn-info" onclick="translateObject()"><span class="glyphicon glyphicon-eye-open"></span> ' +
+                  'Start translation</button>'
+                $("#forgeViewer").html(msgButton);
+              }
+            });
+          })
         }
-        // });
       })
-
     })
     .catch(function(error)
     {
       console.log(error);
     });
-
-
-  // });
 }
+
+
+
 
 function autodeskCustomMenu(autodeskNode)
 {
