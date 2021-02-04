@@ -8,15 +8,15 @@ $(document).ready(function()
     $('#appBuckets').jstree(true).refresh();
   });
 
-  $('#createNewBucket').click(function()
-  {
-    createNewBucket();
-  });
+  // $('#createNewBucket').click(function()
+  // {
+  //   createNewBucket();
+  // });
 
-  $('#createBucketModal').on('shown.bs.modal', function()
-  {
-    $("#newBucketKey").focus();
-  })
+  // $('#createBucketModal').on('shown.bs.modal', function()
+  // {
+  //   $("#newBucketKey").focus();
+  // });
 
   $('#hiddenUploadField').change(function()
   {
@@ -33,11 +33,12 @@ $(document).ready(function()
 
         let uid = localStorage.getItem('uid');
         let token = localStorage.getItem('token');
+        let email = localStorage.getItem('email');
 
 
         $.ajax(
         {
-          url: `/api/forge/oss/objects?uid=${uid}&token=${token}`,
+          url: `/api/forge/oss/objects?uid=${uid}&token=${token}&email=${email}`,
           data: formData,
           processData: false,
           contentType: false,
@@ -52,11 +53,8 @@ $(document).ready(function()
                 {
                   $('#appBuckets').jstree(true).refresh_node(node);
                   _this.value = '';
-                })
-            }, 3000)
-
-            // 
-
+                });
+            }, 3000);
           }
         });
         break;
@@ -65,62 +63,118 @@ $(document).ready(function()
 });
 
 
-function createNewBucket()
-{
-  var bucketKey = $('#newBucketKey').val();
-  jQuery.post(
-  {
-    url: '/api/forge/oss/buckets',
-    contentType: 'application/json',
-    data: JSON.stringify(
-    {
-      'bucketKey': bucketKey
-    }),
-    success: function(res)
-    {
-      $('#appBuckets').jstree(true).refresh();
-      $('#createBucketModal').modal('toggle');
-    },
-    error: function(err)
-    {
-      if (err.status == 409)
-        alert('Bucket already exists - 409: Duplicated')
-      console.log(err);
-    }
-  });
-}
+// function createNewBucket()
+// {
+//   var bucketKey = $('#newBucketKey').val();
+//   jQuery.post(
+//   {
+//     url: '/api/forge/oss/buckets',
+//     contentType: 'application/json',
+//     data: JSON.stringify(
+//     {
+//       'bucketKey': bucketKey
+//     }),
+//     success: function(res)
+//     {
+//       $('#appBuckets').jstree(true).refresh();
+//       $('#createBucketModal').modal('toggle');
+//     },
+//     error: function(err)
+//     {
+//       if (err.status == 409)
+//         alert('Bucket already exists - 409: Duplicated')
+//       console.log(err);
+//     }
+//   });
+// }
 
 //TO DO - Add sharing function based on object ID and userID
 
-// function shareFile(objectID, userId){
-//   return new Promise((resolve, reject)=> {
+// $( "#InviteClient" ).submit(function( event ) {
+//   console.log( $( this ).serialize() );
+//   event.preventDefault();
+// });
 
 
+$('#invite').click(function(event)
+{
+  event.preventDefault();
+  var values = {
+    email: $('#DropdownFormEmail').val(),
+    designName: $('#DropdownFormDesignName').val()
+  };
 
-//   });
-// }
+  $.ajax(
+  {
+    url: `/api/forge/oss/objects/share?uid=${uid}`,
+    data: JSON.stringify(values),
+    contentType: 'application/json',
+    type: 'POST',
+    success: (res) =>
+    {
+      console.log("====res", res)
+    },
+    error: (error) =>
+    {
+      console.log("====error", error)
+    }
+  }, );
+
+
+});
+
+
+$('#remove').click(function(event)
+{
+  event.preventDefault();
+  var values = {
+    email: $('#DropdownFormEmail').val(),
+    designName: $('#DropdownFormDesignName').val()
+  };
+
+  $.ajax(
+  {
+    url: `/api/forge/oss/objects/share?uid=${uid}&remove=true`,
+    data: JSON.stringify(values),
+    contentType: 'application/json',
+    type: 'POST',
+    success: (res) =>
+    {
+      console.log("====res", res)
+    },
+    error: (error) =>
+    {
+      console.log("====error", error)
+    }
+  }, );
+
+
+});
 
 
 function fetchFirebaseData()
 {
   return new Promise((resolve, reject) =>
   {
-    console.log(localStorage.getItem('uid'));
+    // console.log(localStorage.getItem('uid'));
     uid = localStorage.getItem('uid');
-
-    var docRef = db.collection("Files").where('userID', '==', uid);
-    docRef.get().then(function(docs)
+    $.ajax(
     {
-      docs.forEach(function(doc)
+      url: `/api/forge/oss/files/${uid}`,
+      contentType: 'application/json',
+      type: 'GET',
+      success: (res) =>
       {
-        firebaseData.push(doc.data());
-      });
-      resolve(firebaseData)
-    }).catch(function(error)
-    {
-      reject(error);
-      console.log("Error getting document:", error);
-    });
+        firebaseData = res;
+        resolve(firebaseData);
+        console.log("====res", res)
+      },
+      error: (error) =>
+      {
+        reject(error);
+      }
+    }, );
+
   })
 }
 
@@ -140,7 +194,7 @@ function prepareAppBucketTree()
           'check_callback': true,
           'data': [
           {
-            text: localStorage.getItem('uid'),
+            text: "My Designs" /* localStorage.getItem('uid') */ ,
             'icon': 'glyphicon glyphicon-folder-open',
             type: 'bucket',
             children: firebaseData.map((doc) => (
@@ -183,10 +237,10 @@ function prepareAppBucketTree()
       {
         if (data != null && data.node != null && data.node.type == 'object')
         {
-          console.log(data);
+          // console.log(data);
           $("#forgeViewer").empty();
           var urn = data.node.original.objectID;
-          console.log(urn);
+          // console.log(urn);
           getForgeToken(function(access_token)
           {
             jQuery.ajax(
@@ -224,7 +278,7 @@ function prepareAppBucketTree()
 
 function autodeskCustomMenu(autodeskNode)
 {
-  console.log(autodeskNode)
+  // console.log(autodeskNode)
   var items;
 
   switch (autodeskNode.type)
@@ -242,20 +296,20 @@ function autodeskCustomMenu(autodeskNode)
         }
       };
       break;
-    case "object":
-      items = {
-        translateFile:
-        {
-          label: "Translate",
-          action: function()
-          {
-            var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
-            translateObject(treeNode);
-          },
-          icon: 'glyphicon glyphicon-eye-open'
-        }
-      };
-      break;
+      // case "object":
+      //   items = {
+      //     translateFile:
+      //     {
+      //       label: "Translate",
+      //       action: function()
+      //       {
+      //         var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
+      //         translateObject(treeNode);
+      //       },
+      //       icon: 'glyphicon glyphicon-eye-open'
+      //     }
+      //   };
+      //   break;
   }
 
   return items;
@@ -266,19 +320,19 @@ function uploadFile()
   $('#hiddenUploadField').click();
 }
 
-function translateObject(node)
-{
-  $("#forgeViewer").empty();
-  if (node == null) node = $('#appBuckets').jstree(true).get_selected(true)[0];
-  console.log(node)
-  var bucketKey = node.parents[0];
-  var objectKey = node.id;
-  // jQuery.post({
-  //   url: '/api/forge/modelderivative/jobs',
-  //   contentType: 'application/json',
-  //   data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
-  //   success: function (res) {
-  //     $("#forgeViewer").html('Translation started! Please try again in a moment.');
-  //   },
-  // });
-}
+// function translateObject(node)
+// {
+//   $("#forgeViewer").empty();
+//   if (node == null) node = $('#appBuckets').jstree(true).get_selected(true)[0];
+//   // console.log(node)
+//   var bucketKey = node.parents[0];
+//   var objectKey = node.id;
+//   // jQuery.post({
+//   //   url: '/api/forge/modelderivative/jobs',
+//   //   contentType: 'application/json',
+//   //   data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
+//   //   success: function (res) {
+//   //     $("#forgeViewer").html('Translation started! Please try again in a moment.');
+//   //   },
+//   // });
+// }

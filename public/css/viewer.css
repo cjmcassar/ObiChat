@@ -22,6 +22,11 @@ body {
   width: 100%;
 }
 
+#InviteClient{
+  min-width: 200px;
+  padding: 10px 10px;
+}
+
 
 
 

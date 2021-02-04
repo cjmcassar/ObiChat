@@ -35,6 +35,7 @@ window.addEventListener("DOMContentLoaded", () =>
         {
           
           localStorage.setItem('uid', user.uid);
+          localStorage.setItem('email', user.email);
           
           return user.getIdToken().then((idToken) =>
           {

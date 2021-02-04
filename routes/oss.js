@@ -120,6 +120,103 @@ router.post('/buckets', async (req, res, next) =>
   }
 });
 
+router.get('/files/:uid', async (req, res, next) =>
+{
+  try
+  {
+
+    const uid = req.params.uid;
+    var docRef = admin.firestore().collection("Files").where('userID', 'array-contains', uid);
+    const data = [];
+    docRef.get().then(function(docs)
+    {
+      docs.forEach(function(doc)
+      {
+        data.push(doc.data());
+      });
+      return res.status(200).send(data);
+    }).catch(function(error)
+    {
+      next(error);
+    });
+  }
+  catch (err)
+  {
+    next(err);
+  }
+
+});
+
+router.post('/objects/share', async (req, res, next) =>
+{
+  try
+  {
+    const
+    {
+      email,
+      designName
+    } = req.body;
+
+    admin.auth().getUserByEmail(email)
+      .then((userRecord) =>
+      {
+        const owner = req.query.uid;
+        const remove = req.query.remove;
+        const userToShare = userRecord.toJSON().uid;
+        admin.firestore().collection('Files')
+          .where('owner', '==', owner)
+          .where('designName', '==', designName)
+          .get()
+          .then((data) =>
+          {
+            const files = [];
+            data.forEach((obj) =>
+            {
+              files.push(
+              {
+                ...obj.data(),
+                id: obj.id
+              });
+            });
+
+            if (!files.length)
+            {
+              return res.status(404).send(
+              {
+                message: `you do not own any file called ${designName}`,
+              });
+            }
+
+            const ref = admin.firestore().collection('Files')
+              .doc(files[0].id);
+
+            ref.update(
+            {
+              ...files[0],
+              userID: remove ? files[0].userID.filter((user) => user !== userToShare) : [...files[0].userID, userToShare].filter((x, index, self) => self.indexOf(x) === index)
+            });
+
+            return res.status(201).send()
+
+
+          })
+          .catch((err) =>
+          {
+            next(err);
+          });
+
+
+
+      });
+
+  }
+  catch (err)
+  {
+    next(err);
+  }
+
+})
+
 // POST /api/forge/oss/objects - uploads new object to given bucket.
 // Request body must be structured as 'form-data' dictionary
 // with the uploaded file under "fileToUpload" key, and the bucket name under "bucketKey".
@@ -139,6 +236,7 @@ router.post('/objects', multer(
     {
       let uid = req.query.uid;
       let idToken = req.query.token;
+      let email = req.query.email;
 
       // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
       const response = await new ObjectsApi().uploadObject(req.body.bucketKey, req.file.originalname, data.length, data,
@@ -164,81 +262,82 @@ router.post('/objects', multer(
           {}, req.oauth_client, req.oauth_token);
           // setInterval(function()
           // {
-            console.log('polling');
-            var config = {
-              method: 'get',
-              url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/' + buff.toString('base64') + '/manifest',
-              headers:
-              {
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:84.0) Gecko/20100101 Firefox/84.0',
-                'Accept': '*/*',
-                'Accept-Language': 'en-GB,en;q=0.5',
-                'Authorization': 'Bearer ' + token,
-                'Origin': 'http://localhost:3000',
-                'Connection': 'keep-alive',
-                'Referer': 'http://localhost:3000/view',
-                'Pragma': 'no-cache',
-                'Cache-Control': 'no-cache'
-              }
-            };
+          console.log('polling');
+          var config = {
+            method: 'get',
+            url: 'https://developer.api.autodesk.com/modelderivative/v2/designdata/' + buff.toString('base64') + '/manifest',
+            headers:
+            {
+              'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:84.0) Gecko/20100101 Firefox/84.0',
+              'Accept': '*/*',
+              'Accept-Language': 'en-GB,en;q=0.5',
+              'Authorization': 'Bearer ' + token,
+              'Origin': 'http://localhost:3000',
+              'Connection': 'keep-alive',
+              'Referer': 'http://localhost:3000/view',
+              'Pragma': 'no-cache',
+              'Cache-Control': 'no-cache'
+            }
+          };
 
-            //user logs in on frontend using username and password
-            // backend verifies user is logged in and redirects them to the view page
-            //you can save the user id to local storage or using session storage / cookies
-            //when making any request to the backend, pass in the id as a query parameter/ param, and then use it to upload 
+          //user logs in on frontend using username and password
+          // backend verifies user is logged in and redirects them to the view page
+          //you can save the user id to local storage or using session storage / cookies
+          //when making any request to the backend, pass in the id as a query parameter/ param, and then use it to upload 
 
-            axios(config)
-              .then(function(response)
+          axios(config)
+            .then(function(response)
+            {
+              response = response.data;
+              console.log(response.progress, response.status);
+              if (response.progress === "complete")
               {
-                response = response.data;
-                console.log(response.progress, response.status);
-                if (response.progress === "complete")
+                if (response.status === "success")
                 {
-                  if (response.status === "success")
+                  console.log("JOB COMPLETE", job);
+                  // upload to firebase here
+                  try
                   {
-                    console.log("JOB COMPLETE", job);
-                    // upload to firebase here
-                    try
+                    var file = job.output;
+                    var fileName = req.file.originalname;
+                    var urn = job.input.urn;
+
+                    const userDocRef = admin.firestore().collection(`Files`).doc();
+
+                    userDocRef.set(
                     {
-                      var file = job.output;
-                      var fileName = req.file.originalname;
-                      var urn = job.input.urn;
+                      bucketKey: req.body.bucketKey,
+                      owner: uid,
+                      userID: [uid],
+                      designName: fileName,
+                      objectID: urn,
+                      userEmail: email
+                    });
 
-                      const userDocRef = admin.firestore().collection(`Files`).doc();
-    
-
-                      userDocRef.set(
-                      {
-                        bucketKey: req.body.bucketKey,
-                        userID: uid,
-                        designName: fileName,
-                        objectID: urn,
-                      });
-
-                    }
-                    catch (err)
-                    {
-                      next(err);
-                      return;
-                    }
                   }
-                  else
+                  catch (err)
                   {
-                    console.log("Failed");
+                    next(err);
+                    return;
                   }
-
                 }
                 else
                 {
                   console.log("Failed");
                 }
 
-              })
-              .catch(function(error)
+              }
+              else
               {
-                console.log(error);
-                return;
-              });
+                console.log("Failed");
+              }
+
+            })
+            .catch(function(error)
+            {
+              console.log(error);
+              return;
+            });
           res.status(200).end();
         }
         catch (err)
