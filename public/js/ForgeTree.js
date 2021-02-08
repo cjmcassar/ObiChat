@@ -106,6 +106,7 @@ $('#invite').click(function(event)
 
   $.ajax(
   {
+
     url: `/api/forge/oss/objects/share?uid=${uid}`,
     data: JSON.stringify(values),
     contentType: 'application/json',
@@ -119,6 +120,11 @@ $('#invite').click(function(event)
       console.log("====error", error)
     }
   }, );
+
+  var emailSub = "Invitation to view a design";
+  var emailBody = "I'm inviting you to view a CAD design on Obi. %0A%0AObi is a quick, easy way of viewing CAD designs in your web browser and sharing them with others. %0A%0A- Sign up to view design at http://localhost:3000/signup %0A%0A- Or log in at http://localhost:3000/login %0A"
+
+  window.open("mailto:"+values.email + "?subject=" + emailSub + "&body=" + emailBody);
 
 
 });
@@ -167,7 +173,11 @@ function fetchFirebaseData()
       {
         firebaseData = res;
         resolve(firebaseData);
-        console.log("====res", res)
+        firebaseData.forEach((file)=> {
+          $('#DropdownFormDesignName').append(`<option value=${file.designName}> ${file.designName}</option>`)
+        })
+       
+        // console.log("====res", res)
       },
       error: (error) =>
       {
@@ -296,20 +306,45 @@ function autodeskCustomMenu(autodeskNode)
         }
       };
       break;
-      // case "object":
-      //   items = {
-      //     translateFile:
-      //     {
-      //       label: "Translate",
-      //       action: function()
-      //       {
-      //         var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
-      //         translateObject(treeNode);
-      //       },
-      //       icon: 'glyphicon glyphicon-eye-open'
-      //     }
-      //   };
-      //   break;
+    // case "object":
+    //   items = {
+    //     copyFileName:
+    //     {
+    //       label: "Copy",
+    //       action: function()
+    //       {
+    //         //TODO - add design name from firebase and copy that
+    //         // $.ajax(
+    //         //   {
+    //         //     let uid = localStorage.getItem('uid');
+
+    //         //     url: `/api/forge/oss/objects/share?uid=${uid}`,
+    //         //     data: JSON.stringify(values),
+    //         //     contentType: 'application/json',
+    //         //     type: 'POST',
+    //         //     success: (res) =>
+    //         //     {
+    //         //       console.log("====res", res)
+    //         //     },
+    //         //     error: (error) =>
+    //         //     {
+    //         //       console.log("====error", error)
+    //         //     }
+    //         //   }, );
+
+
+    //         var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
+    //         var copyText = document.querySelector("#text");
+
+    //         copyText.select();
+    //         console.log(copyText);
+    //         document.execCommand("copy");
+    //         // translateObject(treeNode);
+    //       },
+    //       icon: 'glyphicon glyphicon-eye-open'
+    //     }
+    //   };
+    //   break;
   }
 
   return items;

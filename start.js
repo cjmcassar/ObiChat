@@ -68,7 +68,7 @@ app.get("/view", function (req, res) {
     });
 });
 
-app.get("/", function (req, res) {
+app.get("/app", function (req, res) {
   // res.clearCookie("session");
   res.render("index.html");
 });

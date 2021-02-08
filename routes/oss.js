@@ -301,6 +301,7 @@ router.post('/objects', multer(
                     var file = job.output;
                     var fileName = req.file.originalname;
                     var urn = job.input.urn;
+                    
 
                     const userDocRef = admin.firestore().collection(`Files`).doc();
 
@@ -311,7 +312,7 @@ router.post('/objects', multer(
                       userID: [uid],
                       designName: fileName,
                       objectID: urn,
-                      userEmail: email
+                      userEmail: email,
                     });
 
                   }

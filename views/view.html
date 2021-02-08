@@ -48,14 +48,17 @@
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
             aria-expanded="false">Invite Client <span class="caret"></span></a>
-          <form class="dropdown-menu p-auto" id="InviteClient">
+          <form class="dropdown-menu " id="InviteClient">
             <div class="form-group">
               <label for="DropdownFormEmail">Email Address</label>
               <input type="email" class="form-control" id="DropdownFormEmail" name ="email" placeholder="email@example.com">
             </div>
             <div class="form-group">
               <label for="DropdownFormDesign">File Name</label>
-              <input type="text" class="form-control" id="DropdownFormDesignName" name="designName" placeholder="example.fbx">
+              <select class="form-control" id="DropdownFormDesignName" name="designName">
+                <option disabled></option>
+              </select>
+              
             </div>
             <div class="form-check">
             </div>
@@ -103,6 +106,9 @@
   </div>
   <form id="uploadFile" method='post' enctype="multipart/form-data">
     <input id="hiddenUploadField" type="file" name="theFile" style="visibility:hidden" />
+  </form>
+  <form id="copyFileName" method='post' enctype="multipart/form-data">
+    <input id="hiddenCopyField" type="text" style="visibility:hidden" />
   </form>
   <!-- Modal Create Bucket -->
   <!-- <div class="modal fade" id="createBucketModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
