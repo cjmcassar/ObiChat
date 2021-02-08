@@ -30,6 +30,7 @@ window.addEventListener("DOMContentLoaded", () =>
         {
           localStorage.removeItem('uid');
           localStorage.removeItem('token');
+          localStorage.removeItem('email');
           // return fetch("/sessionLogout");
           //   console.log("logged out");
           window.location.assign("/login");
