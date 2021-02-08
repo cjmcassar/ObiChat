@@ -104,10 +104,12 @@ $('#invite').click(function(event)
     designName: $('#DropdownFormDesignName').val()
   };
 
-  uid = localStorage.getItem('uid');
+  let uid = localStorage.getItem('uid');
+ 
+  
   $.ajax(
   {
-
+    
     url: `/api/forge/oss/objects/share?uid=${uid}`,
     data: JSON.stringify(values),
     contentType: 'application/json',
@@ -139,7 +141,7 @@ $('#remove').click(function(event)
     designName: $('#DropdownFormDesignName').val()
   };
 
-  uid = localStorage.getItem('uid');
+  let uid = localStorage.getItem('uid');
   $.ajax(
   {
     url: `/api/forge/oss/objects/share?uid=${uid}&remove=true`,
