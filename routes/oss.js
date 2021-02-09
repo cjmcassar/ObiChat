@@ -362,4 +362,50 @@ router.post('/objects', multer(
   });
 });
 
+router.post('/delete/objects', async(req, res, next) => {
+  const { bucketKey, designName } = req.body;
+  try {
+    console.log("=======>",  req.oauth_client, req.oauth_token)
+    // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
+   
+    admin.firestore().collection('Files')
+    .where('owner', '==', req.query.uid)
+    .where('designName', '==', designName)
+    .get()
+    .then(async(data) => {
+      data.forEach((doc)=> {
+        doc.ref.delete()
+      });
+      await new ObjectsApi().deleteObject(bucketKey, designName, req.oauth_client, req.oauth_token);
+      res.status(200).end();
+    });
+   
+  } catch(err) {
+    next(err);
+  }
+  
+
+
+});
+
+//objectsApi.deleteObject(bucketKey,fileName,oAuth2TwoLegged, oAuth2TwoLegged.getCredentials());
+
+
+// POST /api/forge/oss/buckets - delete file.
+// router.post('/objects', multer({ dest: 'delete/' }).single('fileToDelete'), async (req, res, next) => {
+//   fs.readFile(req.file.path, async (err, data) => {
+//     if (err) {
+//       next(err);
+//     }
+//     try {
+//       // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
+//       await new ObjectsApi().deleteObject(req.body.bucketKey, req.file.originalname);
+//       res.status(200).end();
+//     } catch(err) {
+//       next(err);
+//     }
+//   });
+// });
+
+
 module.exports = router;

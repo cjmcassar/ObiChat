@@ -178,7 +178,7 @@ function fetchFirebaseData()
         firebaseData = res;
         resolve(firebaseData);
         firebaseData.forEach((file)=> {
-          $('#DropdownFormDesignName').append(`<option value=${file.designName}> ${file.designName}</option>`)
+          $('#DropdownFormDesignName').append(`<option value="${file.designName}"> ${file.designName}</option>`)
         })
        
         // console.log("====res", res)
@@ -310,45 +310,51 @@ function autodeskCustomMenu(autodeskNode)
         }
       };
       break;
-    // case "object":
-    //   items = {
-    //     copyFileName:
-    //     {
-    //       label: "Copy",
-    //       action: function()
-    //       {
-    //         //TODO - add design name from firebase and copy that
-    //         // $.ajax(
-    //         //   {
-    //         //     let uid = localStorage.getItem('uid');
+    case "object":
+      items = {
+        copyFileName:
+        {
+          label: "Delete",
+          action: function(item, secondItem)
+          {
+            console.log("====item", autodeskNode, secondItem)
+            let uid = localStorage.getItem('uid');
+            let token = localStorage.getItem('token');
+            const {  bucketKey, designName, owner } = autodeskNode.original;
+            //TODO - add design name from firebase and copy that
+            $.ajax(
+              {
+               
 
-    //         //     url: `/api/forge/oss/objects/share?uid=${uid}`,
-    //         //     data: JSON.stringify(values),
-    //         //     contentType: 'application/json',
-    //         //     type: 'POST',
-    //         //     success: (res) =>
-    //         //     {
-    //         //       console.log("====res", res)
-    //         //     },
-    //         //     error: (error) =>
-    //         //     {
-    //         //       console.log("====error", error)
-    //         //     }
-    //         //   }, );
+                url: `/api/forge/oss/delete/objects?uid=${uid}&token=${token}`,
+                data: JSON.stringify({
+                  bucketKey, designName, owner
+                }),
+                contentType: 'application/json',
+                type: 'POST',
+                success: (res) =>
+                {
+                  console.log("====res", res)
+                },
+                error: (error) =>
+                {
+                  console.log("====error", error)
+                }
+              }, );
 
 
-    //         var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
-    //         var copyText = document.querySelector("#text");
+            // var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
+            // var copyText = document.querySelector("#text");
 
-    //         copyText.select();
-    //         console.log(copyText);
-    //         document.execCommand("copy");
-    //         // translateObject(treeNode);
-    //       },
-    //       icon: 'glyphicon glyphicon-eye-open'
-    //     }
-    //   };
-    //   break;
+            // copyText.select();
+            // console.log(copyText);
+            // document.execCommand("copy");
+            // translateObject(treeNode);
+          },
+          icon: 'glyphicon glyphicon-eye-open'
+        }
+      };
+      break;
   }
 
   return items;
