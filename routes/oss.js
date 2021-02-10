@@ -196,7 +196,7 @@ router.post('/objects/share', async (req, res, next) =>
               userID: remove ? files[0].userID.filter((user) => user !== userToShare) : [...files[0].userID, userToShare].filter((x, index, self) => self.indexOf(x) === index)
             });
 
-            return res.status(201).send()
+            return res.status(201).send();
 
 
           })
@@ -215,7 +215,7 @@ router.post('/objects/share', async (req, res, next) =>
     next(err);
   }
 
-})
+});
 
 // POST /api/forge/oss/objects - uploads new object to given bucket.
 // Request body must be structured as 'form-data' dictionary
@@ -349,7 +349,7 @@ router.post('/objects', multer(
       }
       else
       {
-        console.log('bad')
+        console.log('bad');
         res.status(response.statusCode).end(response);
       }
     }
@@ -365,7 +365,7 @@ router.post('/objects', multer(
 router.post('/delete/objects', async(req, res, next) => {
   const { bucketKey, designName } = req.body;
   try {
-    console.log("=======>",  req.oauth_client, req.oauth_token)
+    // console.log("=======>",  req.oauth_client, req.oauth_token)
     // Upload an object to bucket using [ObjectsApi](https://github.com/Autodesk-Forge/forge-api-nodejs-client/blob/master/docs/ObjectsApi.md#uploadObject).
    
     admin.firestore().collection('Files')
@@ -374,7 +374,7 @@ router.post('/delete/objects', async(req, res, next) => {
     .get()
     .then(async(data) => {
       data.forEach((doc)=> {
-        doc.ref.delete()
+        doc.ref.delete();
       });
       await new ObjectsApi().deleteObject(bucketKey, designName, req.oauth_client, req.oauth_token);
       res.status(200).end();

@@ -1,4 +1,4 @@
-let firebaseData = []
+let firebaseData = [];
 $(document).ready(function()
 {
 
@@ -45,7 +45,7 @@ $(document).ready(function()
           type: 'POST',
           success: function(data)
           {
-            firebaseData = []
+            firebaseData = [];
             setTimeout(() =>
             {
               fetchFirebaseData()
@@ -116,16 +116,16 @@ $('#invite').click(function(event)
     type: 'POST',
     success: (res) =>
     {
-      console.log("====res", res)
+      console.log("====res", res);
     },
     error: (error) =>
     {
-      console.log("====error", error)
+      console.log("====error", error);
     }
   }, );
 
   var emailSub = "Invitation to view a design";
-  var emailBody = "I'm inviting you to view a CAD design on Obi. %0A%0AObi is a quick, easy way of viewing CAD designs in your web browser and sharing them with others. %0A%0A- Sign up to view design at http://localhost:3000/signup %0A%0A- Or log in at http://localhost:3000/login %0A"
+  var emailBody = "I'm inviting you to view a CAD design on Obi. %0A%0AObi is a quick, easy way of viewing CAD designs in your web browser and sharing them with others. %0A%0A- Sign up to view design at https://obi-vision.herokuapp.com/signup %0A%0A- Or log in at https://obi-vision.herokuapp.com/login %0A%0A";
 
   window.open("mailto:"+values.email + "?subject=" + emailSub + "&body=" + emailBody);
 
@@ -150,11 +150,11 @@ $('#remove').click(function(event)
     type: 'POST',
     success: (res) =>
     {
-      console.log("====res", res)
+      console.log("====res", res);
     },
     error: (error) =>
     {
-      console.log("====error", error)
+      console.log("====error", error);
     }
   }, );
 
@@ -178,8 +178,8 @@ function fetchFirebaseData()
         firebaseData = res;
         resolve(firebaseData);
         firebaseData.forEach((file)=> {
-          $('#DropdownFormDesignName').append(`<option value="${file.designName}"> ${file.designName}</option>`)
-        })
+          $('#DropdownFormDesignName').append(`<option value="${file.designName}"> ${file.designName}</option>`);
+        });
        
         // console.log("====res", res)
       },
@@ -189,7 +189,7 @@ function fetchFirebaseData()
       }
     }, );
 
-  })
+  });
 }
 
 function prepareAppBucketTree()
@@ -273,13 +273,13 @@ function prepareAppBucketTree()
               {
                 var msgButton = 'This file is not translated yet! ' +
                   '<button class="btn btn-xs btn-info" onclick="translateObject()"><span class="glyphicon glyphicon-eye-open"></span> ' +
-                  'Start translation</button>'
+                  'Start translation</button>';
                 $("#forgeViewer").html(msgButton);
               }
             });
-          })
+          });
         }
-      })
+      });
     })
     .catch(function(error)
     {
@@ -317,7 +317,6 @@ function autodeskCustomMenu(autodeskNode)
           label: "Delete",
           action: function(item, secondItem)
           {
-            console.log("====item", autodeskNode, secondItem)
             let uid = localStorage.getItem('uid');
             let token = localStorage.getItem('token');
             const {  bucketKey, designName, owner } = autodeskNode.original;
@@ -334,11 +333,11 @@ function autodeskCustomMenu(autodeskNode)
                 type: 'POST',
                 success: (res) =>
                 {
-                  console.log("====res", res)
+                  console.log("====res", res);
                 },
                 error: (error) =>
                 {
-                  console.log("====error", error)
+                  console.log("====error", error);
                 }
               }, );
 
