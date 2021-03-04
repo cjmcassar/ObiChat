@@ -1,22 +1,15 @@
 let firebaseData = [];
+
+// initialise bucket tree functions
 $(document).ready(function()
 {
 
   prepareAppBucketTree();
+
   $('#refreshBuckets').click(function()
   {
     $('#appBuckets').jstree(true).refresh();
   });
-
-  // $('#createNewBucket').click(function()
-  // {
-  //   createNewBucket();
-  // });
-
-  // $('#createBucketModal').on('shown.bs.modal', function()
-  // {
-  //   $("#newBucketKey").focus();
-  // });
 
   $('#hiddenUploadField').change(function()
   {
@@ -24,7 +17,7 @@ $(document).ready(function()
     var _this = this;
     if (_this.files.length == 0) return;
     var file = _this.files[0];
-    switch (node.type)
+    switch (node? node.type: "bucket")
     {
       case 'bucket':
         var formData = new FormData();
@@ -46,15 +39,15 @@ $(document).ready(function()
           success: function(data)
           {
             firebaseData = [];
-            setTimeout(() =>
-            {
+
               fetchFirebaseData()
                 .then((data) =>
                 {
-                  $('#appBuckets').jstree(true).refresh_node(node);
+                  // $('#appBuckets').jstree(true).refresh_node(node);
+                  location.reload();
                   _this.value = '';
                 });
-            }, 3000);
+
           }
         });
         break;
@@ -62,40 +55,7 @@ $(document).ready(function()
   });
 });
 
-
-// function createNewBucket()
-// {
-//   var bucketKey = $('#newBucketKey').val();
-//   jQuery.post(
-//   {
-//     url: '/api/forge/oss/buckets',
-//     contentType: 'application/json',
-//     data: JSON.stringify(
-//     {
-//       'bucketKey': bucketKey
-//     }),
-//     success: function(res)
-//     {
-//       $('#appBuckets').jstree(true).refresh();
-//       $('#createBucketModal').modal('toggle');
-//     },
-//     error: function(err)
-//     {
-//       if (err.status == 409)
-//         alert('Bucket already exists - 409: Duplicated')
-//       console.log(err);
-//     }
-//   });
-// }
-
-//TO DO - Add sharing function based on object ID and userID
-
-// $( "#InviteClient" ).submit(function( event ) {
-//   console.log( $( this ).serialize() );
-//   event.preventDefault();
-// });
-
-
+//Invite client to view file from user
 $('#invite').click(function(event)
 {
   event.preventDefault();
@@ -132,7 +92,7 @@ $('#invite').click(function(event)
 
 });
 
-
+//Remove client to view client's file
 $('#remove').click(function(event)
 {
   event.preventDefault();
@@ -161,7 +121,7 @@ $('#remove').click(function(event)
 
 });
 
-
+//Only show user's files that are listed on Cloud Firestor
 function fetchFirebaseData()
 {
   return new Promise((resolve, reject) =>
@@ -192,6 +152,7 @@ function fetchFirebaseData()
   });
 }
 
+//Organise files in bucket tree based on file type
 function prepareAppBucketTree()
 {
   fetchFirebaseData()
@@ -242,7 +203,7 @@ function prepareAppBucketTree()
         "plugins": ["types", "state", "sort", "contextmenu"],
         contextmenu:
         {
-          items: autodeskCustomMenu
+          items: rightClickItemCustomMenu
         }
       }).on('loaded.jstree', function()
       {
@@ -289,8 +250,8 @@ function prepareAppBucketTree()
 
 
 
-
-function autodeskCustomMenu(autodeskNode)
+//Assign right-click user functions to the items based on file type
+function rightClickItemCustomMenu(autodeskNode)
 {
   // console.log(autodeskNode)
   var items;
@@ -334,6 +295,7 @@ function autodeskCustomMenu(autodeskNode)
                 success: (res) =>
                 {
                   console.log("====res", res);
+                  location.reload();
                 },
                 error: (error) =>
                 {
@@ -363,20 +325,3 @@ function uploadFile()
 {
   $('#hiddenUploadField').click();
 }
-
-// function translateObject(node)
-// {
-//   $("#forgeViewer").empty();
-//   if (node == null) node = $('#appBuckets').jstree(true).get_selected(true)[0];
-//   // console.log(node)
-//   var bucketKey = node.parents[0];
-//   var objectKey = node.id;
-//   // jQuery.post({
-//   //   url: '/api/forge/modelderivative/jobs',
-//   //   contentType: 'application/json',
-//   //   data: JSON.stringify({ 'bucketKey': bucketKey, 'objectName': objectKey }),
-//   //   success: function (res) {
-//   //     $("#forgeViewer").html('Translation started! Please try again in a moment.');
-//   //   },
-//   // });
-// }

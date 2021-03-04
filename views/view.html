@@ -88,15 +88,17 @@
       <div class="col-sm-4 fill">
         <div class="panel panel-default fill">
           <div class="panel-heading" data-toggle="tooltip">
-            Buckets &amp; Objects
+            Files &amp; Designs
             <!-- <span id="refreshBuckets" class="glyphicon glyphicon-refresh" style="cursor: pointer"></span> -->
-            <!-- <button class="btn btn-xs btn-info" style="float: right" id="showFormCreateBucket" data-toggle="modal"
-              data-target="#createBucketModal">
-              <span class="glyphicon glyphicon-folder-close"></span> New bucket
-            </button> -->
+            <button class="btn btn-xs btn-info" style="float: right" id="uploadFile" onclick="uploadFile()" method='post' enctype="multipart/form-data"
+              data-target="#hiddenUploadField">
+              
+              <span class="glyphicon glyphicon-folder-close"></span> Upload design
+            </button>
+            
           </div>
           <div id="appBuckets">
-            tree here
+            Your designs should be here
           </div>
         </div>
       </div>
@@ -108,9 +110,9 @@
   <form id="uploadFile" method='post' enctype="multipart/form-data">
     <input id="hiddenUploadField" type="file" name="theFile" style="visibility:hidden" />
   </form>
-  <form id="copyFileName" method='post' enctype="multipart/form-data">
+  <!-- <form id="copyFileName" method='post' enctype="multipart/form-data">
     <input id="hiddenCopyField" type="text" style="visibility:hidden" />
-  </form>
+  </form> -->
   <!-- Modal Create Bucket -->
   <!-- <div class="modal fade" id="createBucketModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
