@@ -43,7 +43,7 @@ $(document).ready(function()
               fetchFirebaseData()
                 .then((data) =>
                 {
-                  // $('#appBuckets').jstree(true).refresh_node(node);
+                  
                   location.reload();
                   _this.value = '';
                 });

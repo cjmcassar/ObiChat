@@ -47,7 +47,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-            aria-expanded="false">Invite Client <span class="caret"></span></a>
+            aria-expanded="false">Share Design <span class="caret"></span></a>
           <form class="dropdown-menu " id="InviteClient">
             <div class="form-group">
               <label for="DropdownFormEmail">Email Address</label>
@@ -90,12 +90,12 @@
           <div class="panel-heading" data-toggle="tooltip">
             Files &amp; Designs
             <!-- <span id="refreshBuckets" class="glyphicon glyphicon-refresh" style="cursor: pointer"></span> -->
-            <button class="btn btn-xs btn-info" style="float: right" id="uploadFile" onclick="uploadFile()" method='post' enctype="multipart/form-data"
-              data-target="#hiddenUploadField">
-              
+            <button class="btn btn-xs btn-info" style="float: right" id="uploadFile" onclick="uploadFile()"
+              method='post' enctype="multipart/form-data" data-target="#hiddenUploadField">
+
               <span class="glyphicon glyphicon-folder-close"></span> Upload design
             </button>
-            
+
           </div>
           <div id="appBuckets">
             Your designs should be here
@@ -110,12 +110,8 @@
   <form id="uploadFile" method='post' enctype="multipart/form-data">
     <input id="hiddenUploadField" type="file" name="theFile" style="visibility:hidden" />
   </form>
-  <!-- <form id="copyFileName" method='post' enctype="multipart/form-data">
-    <input id="hiddenCopyField" type="text" style="visibility:hidden" />
-  </form> -->
-  <!-- Modal Create Bucket -->
-  <!-- <div class="modal fade" id="createBucketModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-    <div class="modal-dialog" role="document">
+  
+    <!-- <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Cancel">
@@ -133,24 +129,31 @@
           <button type="button" class="btn btn-primary" id="createNewBucket">Go ahead, create the bucket</button>
         </div>
       </div>
+    </div> -->
+
+    <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+              <h1>Processing...</h1>
+          </div>
+          <div class="modal-body">
+            <div class="progress">
+              <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                <span class="sr-only">40% Complete (success)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </div> -->
+  </div> 
 
   <!-- TODO Add firebase config script -->
   <script src="/js/signout.js"></script>
   <script src="js/ForgeTree.js"></script>
   <script src="js/ForgeViewer.js"></script>
-
-
-  <!-- Start of LiveChat (www.livechatinc.com) code -->
-  <script>
-    window.__lc = window.__lc || {};
-    window.__lc.license = 12486450;
-    ; (function (n, t, c) { function i(n) { return e._h ? e._h.apply(null, n) : e._q.push(n) } var e = { _q: [], _h: null, _v: "2.0", on: function () { i(["on", c.call(arguments)]) }, once: function () { i(["once", c.call(arguments)]) }, off: function () { i(["off", c.call(arguments)]) }, get: function () { if (!e._h) throw new Error("[LiveChatWidget] You can't use getters before load."); return i(["get", c.call(arguments)]) }, call: function () { i(["call", c.call(arguments)]) }, init: function () { var n = t.createElement("script"); n.async = !0, n.type = "text/javascript", n.src = "https://cdn.livechatinc.com/tracking.js", t.head.appendChild(n) } }; !n.__lc.asyncInit && e.init(), n.LiveChatWidget = n.LiveChatWidget || e }(window, document, [].slice))
-  </script>
-  <noscript><a href="https://www.livechatinc.com/chat-with/12486450/" rel="nofollow">Chat with us</a>, powered by <a
-      href="https://www.livechatinc.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a></noscript>
-  <!-- End of LiveChat code -->
+  <script src="js/ClientChat.js"></script>
 
 </body>
 
