@@ -27,6 +27,8 @@ body {
   padding: 10px 10px;
 }
 
-
+.progress-bar.animate {
+  width: 100%;
+}
 
 

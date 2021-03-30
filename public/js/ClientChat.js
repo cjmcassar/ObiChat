@@ -9,8 +9,8 @@ var chat_appid = '56012';
 var chat_auth = 'e2f6f8e9f032eb8233b99b8e2e33cb9b';
 var chat_id = email;
 var chat_name = email;
-var chat_avatar = 'USER_AVATAR';
-var chat_link = 'USER_PROFILELINK';
+// var chat_avatar = 'USER_AVATAR';
+// var chat_link = 'USER_PROFILELINK';
 var chat_friends = FriendEmail;
 
 var chat_position = 'left';
@@ -30,16 +30,16 @@ var chat_position = 'left';
   chat_script.parentNode.insertBefore(chat_js, chat_script);
 })();
 
-const options = {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}};
+// const options = {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}};
 
-fetch('https://api.cometondemand.net/api/v2/addFriends', options)
-  .then(response => console.log(response))
-  .catch(err => console.error(err));
+// fetch('https://api.cometondemand.net/api/v2/addFriends', options)
+//   .then(response => console.log(response))
+//   .catch(err => console.error(err));
 
 //LiveChat code
 window.__lc = window.__lc ||
 {};
-window.__lc.license = 12486450;;
+window.__lc.license = 12486450;
 (function(n, t, c)
 {
   function i(n)

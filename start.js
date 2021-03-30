@@ -24,6 +24,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(express.json({ limit: '50mb' }));
 
+// --------------- cometchat api configuration ------ 
+app.use('/api/CometChat/chat', require('./routes/chat'));
+
+
 // --------------- autodesk api configuration ------ 
 app.use('/api/forge/oauth', require('./routes/oauth'));
 app.use('/api/forge/oss', require('./routes/oss'));

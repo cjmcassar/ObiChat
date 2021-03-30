@@ -95,6 +95,18 @@
 
               <span class="glyphicon glyphicon-folder-close"></span> Upload design
             </button>
+            <div class="modal js-loading-bar">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-body">
+                    <div class="progress progress-popup">
+                      <div class="progress-bar"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
 
           </div>
           <div id="appBuckets">
@@ -110,8 +122,8 @@
   <form id="uploadFile" method='post' enctype="multipart/form-data">
     <input id="hiddenUploadField" type="file" name="theFile" style="visibility:hidden" />
   </form>
-  
-    <!-- <div class="modal-dialog" role="document">
+
+  <!-- <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Cancel">
@@ -131,29 +143,22 @@
       </div>
     </div> -->
 
-    <div class="modal fade" id="pleaseWaitDialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-              <h1>Processing...</h1>
-          </div>
-          <div class="modal-body">
-            <div class="progress">
-              <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
-                <span class="sr-only">40% Complete (success)</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div> 
+
+
+  </div>
 
   <!-- TODO Add firebase config script -->
   <script src="/js/signout.js"></script>
   <script src="js/ForgeTree.js"></script>
   <script src="js/ForgeViewer.js"></script>
   <script src="js/ClientChat.js"></script>
+  <script>
+    this.$('.js-loading-bar').modal({
+  backdrop: 'static',
+  show: false
+});
+
+  </script>
 
 </body>
 

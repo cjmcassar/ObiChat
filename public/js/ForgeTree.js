@@ -14,10 +14,11 @@ $(document).ready(function()
   $('#hiddenUploadField').change(function()
   {
     var node = $('#appBuckets').jstree(true).get_selected(true)[0];
+    //console.log("=======triggered", this.files.length, node ? node.type : "bucket");
     var _this = this;
     if (_this.files.length == 0) return;
     var file = _this.files[0];
-    switch (node? node.type: "bucket")
+    switch (node ? node.type : "bucket")
     {
       case 'bucket':
         var formData = new FormData();
@@ -28,9 +29,36 @@ $(document).ready(function()
         let token = localStorage.getItem('token');
         let email = localStorage.getItem('email');
 
+        //Progress bar
+        var $modal = $('.js-loading-bar'),
+          $bar = $modal.find('.progress-bar');
+        $modal.modal('show');
+        $bar.addClass('animate');
+
+
+
 
         $.ajax(
         {
+          // xhr: function() {
+          //   var xhr = new window.XMLHttpRequest();
+        
+          //   xhr.upload.addEventListener("progress", function(evt) {
+          //     console.log("=========>progressss");
+          //     if (evt.lengthComputable) {
+          //       var percentComplete = evt.loaded / evt.total;
+          //       percentComplete = parseInt(percentComplete * 100);
+          //       console.log("=========>",percentComplete);
+        
+          //       if (percentComplete === 100) {
+        
+          //       }
+        
+          //     }
+          //   }, false);
+        
+          //   return xhr;
+          // },
           url: `/api/forge/oss/objects?uid=${uid}&token=${token}&email=${email}`,
           data: formData,
           processData: false,
@@ -40,13 +68,14 @@ $(document).ready(function()
           {
             firebaseData = [];
 
-              fetchFirebaseData()
-                .then((data) =>
-                {
-                  
-                  location.reload();
-                  _this.value = '';
-                });
+            fetchFirebaseData()
+              .then((data) =>
+              {
+                $bar.removeClass('animate');
+                $modal.modal('hide');
+                location.reload();
+                _this.value = '';
+              });
 
           }
         });
@@ -65,11 +94,11 @@ $('#invite').click(function(event)
   };
 
   let uid = localStorage.getItem('uid');
- 
-  
+
+  //TODO - need to call the api from the server
   $.ajax(
   {
-    
+
     url: `/api/forge/oss/objects/share?uid=${uid}`,
     data: JSON.stringify(values),
     contentType: 'application/json',
@@ -84,10 +113,53 @@ $('#invite').click(function(event)
     }
   }, );
 
+  var email = $('#DropdownFormEmail').val();
+  const userEmail = localStorage.getItem('email');
+  let token = localStorage.getItem('token');
+
+  $.ajax(
+  {
+    url: `/api/CometChat/chat/add-friend?uid=${uid}&token=${token}&email=${email}`,
+    data: JSON.stringify(
+    {
+      email,
+      userEmail
+    }),
+    contentType: 'application/json',
+    type: 'POST',
+    success: (res) =>
+    {
+      console.log("====res", res);
+    },
+    error: (error) =>
+    {
+      console.log("====error", error);
+    }
+  });
+
+  // const options = {
+  //   method: 'POST',
+  //   headers: {
+  //     'api-key': '56012x414ca746f2cb210859ba0dbecf84d17f',
+  //     'Content-Type': 'application/x-www-form-urlencoded'
+  //   },
+  //   body: {
+  //     UID: 'chris.whitehead@obi.vision',
+  //     friendsUID: 'cj.cassar@obi.vision',
+  //     clearExisting: 'false'
+  //   }
+  // };
+
+  // fetch('https://api.cometondemand.net/api/v2/addFriends', options)
+  //   .then(response => response.json())
+  //   .then(response => console.log(response))
+  //   .catch(err => console.error(err));
+
+
   var emailSub = "Invitation to view a design";
   var emailBody = "I'm inviting you to view a CAD design on Obi. %0A%0AObi is a quick, easy way of viewing CAD designs in your web browser and sharing them with others. %0A%0A- Sign up to view design at https://obi-vision.herokuapp.com/signup %0A%0A- Or log in at https://obi-vision.herokuapp.com/login %0A%0A";
 
-  window.open("mailto:"+values.email + "?subject=" + emailSub + "&body=" + emailBody);
+  window.open("mailto:" + values.email + "?subject=" + emailSub + "&body=" + emailBody);
 
 
 });
@@ -119,6 +191,28 @@ $('#remove').click(function(event)
   }, );
 
 
+  //TODO - need to call the api from the server
+  var email = $('#DropdownFormEmail').val();
+
+  const options = {
+    method: 'POST',
+    headers:
+    {
+      'api-key': '56012x414ca746f2cb210859ba0dbecf84d17f',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body:
+    {
+      UID: 'cj.cassar@obi.vision',
+      friendsUID: email,
+    }
+  };
+
+  fetch('https://api.cometondemand.net/api/v2/deleteFriends', options)
+    .then(response => console.log(response))
+    .catch(err => console.error(err));
+
+
 });
 
 //Only show user's files that are listed on Cloud Firestor
@@ -137,10 +231,11 @@ function fetchFirebaseData()
       {
         firebaseData = res;
         resolve(firebaseData);
-        firebaseData.forEach((file)=> {
+        firebaseData.forEach((file) =>
+        {
           $('#DropdownFormDesignName').append(`<option value="${file.designName}"> ${file.designName}</option>`);
         });
-       
+
         // console.log("====res", res)
       },
       error: (error) =>
@@ -248,8 +343,6 @@ function prepareAppBucketTree()
     });
 }
 
-
-
 //Assign right-click user functions to the items based on file type
 function rightClickItemCustomMenu(autodeskNode)
 {
@@ -280,28 +373,36 @@ function rightClickItemCustomMenu(autodeskNode)
           {
             let uid = localStorage.getItem('uid');
             let token = localStorage.getItem('token');
-            const {  bucketKey, designName, owner } = autodeskNode.original;
+            const
+            {
+              bucketKey,
+              designName,
+              owner
+            } = autodeskNode.original;
             //TODO - add design name from firebase and copy that
             $.ajax(
-              {
-               
+            {
 
-                url: `/api/forge/oss/delete/objects?uid=${uid}&token=${token}`,
-                data: JSON.stringify({
-                  bucketKey, designName, owner
-                }),
-                contentType: 'application/json',
-                type: 'POST',
-                success: (res) =>
-                {
-                  console.log("====res", res);
-                  location.reload();
-                },
-                error: (error) =>
-                {
-                  console.log("====error", error);
-                }
-              }, );
+
+              url: `/api/forge/oss/delete/objects?uid=${uid}&token=${token}`,
+              data: JSON.stringify(
+              {
+                bucketKey,
+                designName,
+                owner
+              }),
+              contentType: 'application/json',
+              type: 'POST',
+              success: (res) =>
+              {
+                console.log("====res", res);
+                location.reload();
+              },
+              error: (error) =>
+              {
+                console.log("====error", error);
+              }
+            }, );
 
 
             // var treeNode = $('#appBuckets').jstree(true).get_selected(true)[0];
