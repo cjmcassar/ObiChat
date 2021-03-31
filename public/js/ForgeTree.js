@@ -35,30 +35,8 @@ $(document).ready(function()
         $modal.modal('show');
         $bar.addClass('animate');
 
-
-
-
         $.ajax(
         {
-          // xhr: function() {
-          //   var xhr = new window.XMLHttpRequest();
-        
-          //   xhr.upload.addEventListener("progress", function(evt) {
-          //     console.log("=========>progressss");
-          //     if (evt.lengthComputable) {
-          //       var percentComplete = evt.loaded / evt.total;
-          //       percentComplete = parseInt(percentComplete * 100);
-          //       console.log("=========>",percentComplete);
-        
-          //       if (percentComplete === 100) {
-        
-          //       }
-        
-          //     }
-          //   }, false);
-        
-          //   return xhr;
-          // },
           url: `/api/forge/oss/objects?uid=${uid}&token=${token}&email=${email}`,
           data: formData,
           processData: false,
@@ -80,6 +58,12 @@ $(document).ready(function()
           }
         });
         break;
+
+        case 'object':
+
+        alert("Please select the Folder -My Designs- before uploading");
+
+        break;
     }
   });
 });
@@ -95,7 +79,7 @@ $('#invite').click(function(event)
 
   let uid = localStorage.getItem('uid');
 
-  //TODO - need to call the api from the server
+  
   $.ajax(
   {
 
@@ -137,25 +121,6 @@ $('#invite').click(function(event)
     }
   });
 
-  // const options = {
-  //   method: 'POST',
-  //   headers: {
-  //     'api-key': '56012x414ca746f2cb210859ba0dbecf84d17f',
-  //     'Content-Type': 'application/x-www-form-urlencoded'
-  //   },
-  //   body: {
-  //     UID: 'chris.whitehead@obi.vision',
-  //     friendsUID: 'cj.cassar@obi.vision',
-  //     clearExisting: 'false'
-  //   }
-  // };
-
-  // fetch('https://api.cometondemand.net/api/v2/addFriends', options)
-  //   .then(response => response.json())
-  //   .then(response => console.log(response))
-  //   .catch(err => console.error(err));
-
-
   var emailSub = "Invitation to view a design";
   var emailBody = "I'm inviting you to view a CAD design on Obi. %0A%0AObi is a quick, easy way of viewing CAD designs in your web browser and sharing them with others. %0A%0A- Sign up to view design at https://obi-vision.herokuapp.com/signup %0A%0A- Or log in at https://obi-vision.herokuapp.com/login %0A%0A";
 
@@ -193,24 +158,28 @@ $('#remove').click(function(event)
 
   //TODO - need to call the api from the server
   var email = $('#DropdownFormEmail').val();
+  const userEmail = localStorage.getItem('email');
+  let token = localStorage.getItem('token');
 
-  const options = {
-    method: 'POST',
-    headers:
+  $.ajax(
+  {
+    url: `/api/CometChat/chat/delete-friend?uid=${uid}&token=${token}&email=${email}`,
+    data: JSON.stringify(
     {
-      'api-key': '56012x414ca746f2cb210859ba0dbecf84d17f',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      email,
+      userEmail
+    }),
+    contentType: 'application/json',
+    type: 'POST',
+    success: (res) =>
+    {
+      console.log("====res", res);
     },
-    body:
+    error: (error) =>
     {
-      UID: 'cj.cassar@obi.vision',
-      friendsUID: email,
+      console.log("====error", error);
     }
-  };
-
-  fetch('https://api.cometondemand.net/api/v2/deleteFriends', options)
-    .then(response => console.log(response))
-    .catch(err => console.error(err));
+  });
 
 
 });
